@@ -7,11 +7,10 @@ from PIL import Image, ImageOps
 import base64, io
 import sqlite3
 
-#Instanciate flask-app and CORS(Sharing policy) 
 app = Flask(__name__)
 CORS(app)
 
-##Paths for models and scaler
+## Load models and scaler
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model = joblib.load(os.path.join(current_dir, "models/random_forest_crop.joblib"))
 scaler = joblib.load(os.path.join(current_dir, "models/scaler.joblib"))
@@ -26,19 +25,19 @@ except Exception as e:
     print(f"[MNIST] Warning: could not load model/scaler: {e}")
 
 
-# Database-connection function
+# Creates and returns SQLite DB connection
 def get_connection():
     conn = sqlite3.connect("predictions.db")
     conn.row_factory = sqlite3.Row
     return conn
 
-# Helper-function for database inserts
+# Writes crop prediction to database
 def Write_to_db(data, prediction):
     try:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-                INSERT INTO predictions (N, P, K,  humidity,  rainfall,temperature, crop, ph,name)
+                INSERT INTO predictions (N, P, K, humidity, rainfall, temperature, crop, ph, name)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 data['N'],
@@ -50,7 +49,6 @@ def Write_to_db(data, prediction):
                 prediction,
                 data['ph'],
                 data['name']
-                          
             ))
         conn.commit()
         conn.close()
@@ -59,12 +57,12 @@ def Write_to_db(data, prediction):
         print(f"db error : {e}")
         return False
 
-#Route for handling prediction from frontend
+# Predicts crop type from soil and weather parameters
 @app.route("/api/predict", methods=['POST'])
 def predict():
     try:
         data = request.json
-        features = np.array([[
+        features = np.array([[ 
             data['N'], data['P'], data['K'],
             data['temperature'], data['humidity'],
             data['ph'], data['rainfall']
@@ -73,42 +71,37 @@ def predict():
         features_scaled = scaler.transform(features)
         prediction = model.predict(features_scaled)
 
-        #Write result and data to db
-        Write_to_db(data,prediction[0])
-
-        #make the first letter capitilitez of the result (crop)
+        Write_to_db(data, prediction[0])
         prediction_cap = prediction[0].capitalize()
 
-        #sends back json with result and http status
         return jsonify({
             'prediction': prediction_cap,
             'status': "success"
         })
-        
-    
     except Exception as e:
         return jsonify({
             "error": str(e),
             "status": "error"
         })
-    
 
+# Decodes base64 PNG string into image bytes
 def _decode_data_url_png(data_url: str) -> bytes:
-    # "data:image/png;base64,AAAA..."
     header, b64 = data_url.split(",", 1)
     return base64.b64decode(b64)
 
+# Prepares image as 28x28 grayscale array for MNIST model
 def _prepare_28x28(img_bytes: bytes, invert=True, binarize=False, threshold=128):
-    img = Image.open(io.BytesIO(img_bytes)).convert("L")  # gråskala
+    img = Image.open(io.BytesIO(img_bytes)).convert("L")
     img = img.resize((28, 28), Image.BILINEAR)
     if invert:
-        img = ImageOps.invert(img)  # vår canvas: svart på vit -> MNIST: vit på svart
+        img = ImageOps.invert(img)
     arr2d = np.array(img, dtype=np.float32)
     if binarize:
         arr2d = (arr2d > threshold).astype(np.float32) * 255.0
-    X = arr2d.reshape(1, -1)  # (1, 784)
+    X = arr2d.reshape(1, -1)
     return X, arr2d
 
+# Checks if drawn digit matches target using MNIST model
 @app.route("/api/mnist/check", methods=["POST"])
 def mnist_check():
     """
@@ -135,7 +128,6 @@ def mnist_check():
         Xs = mnist_scaler.transform(X)
         pred = int(mnist_model.predict(Xs)[0])
 
-        # Räkna fram prob-vektor om möjligt
         target_prob = None
         pred_prob = None
         if hasattr(mnist_model, "predict_proba"):
@@ -146,8 +138,6 @@ def mnist_check():
             pred_prob = 1.0 if pred == target else 0.0
             target_prob = pred_prob
 
-        # Godkänn om modellen gissar rätt OCH har ok confidence,
-        # eller om target-klassen i sig har ok confidence.
         passed = ((pred == target) and (pred_prob >= threshold)) or (target_prob >= threshold) or (pred == target)
 
         return jsonify({
@@ -160,6 +150,7 @@ def mnist_check():
         })
     except Exception as e:
         return jsonify({"status":"error","error":str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
