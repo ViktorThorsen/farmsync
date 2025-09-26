@@ -54,7 +54,7 @@ python api.py
 
 #4. Hämta modellen för AI check på:
 url https://drive.google.com/file/d/1H361sWNAUbbMuNn7GO1-p048MFrQhWDR/view?usp=sharing
-#5. Ladda ned modellen och lägg modellfilen i farmsync-clean/server/models, se till att den har namnet mnist_et.joblib
+#5. Ladda ned modellen och lägg modellfilen i farmsync/server/models, se till att den har namnet mnist_et.joblib
 
 # 5. Installera frontend (React)
 cd ../frontend
