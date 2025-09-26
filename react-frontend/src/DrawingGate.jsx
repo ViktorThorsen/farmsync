@@ -132,7 +132,6 @@ export default function DrawingGate({ apiBase = API_BASE, onPassed }) {
         <button onClick={submitDrawing} disabled={loading}>{loading ? "Checking…" : "Submit"}</button>
       </div>
       {msg && <p className="gate-msg">{msg}</p>}
-      <p className="gate-hint">Tip: Draw with thick, continuous lines.</p>
     </div>
   );
 }

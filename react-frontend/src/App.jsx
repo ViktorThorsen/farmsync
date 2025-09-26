@@ -7,13 +7,13 @@ import { API_BASE } from "./lib/apiBase";
 function App() {
   const [verified, setVerified] = useState(false);
 
-  const [N, setN] = useState(50);
-  const [P, setP] = useState(30);
-  const [K, setK] = useState(70);
-  const [humidity, setHumidity] = useState(50);
-  const [ph, setPh] = useState(30);
-  const [rainfall, setRainfall] = useState(70);
-  const [temperature, setTemperature] = useState(20);
+  const [N, setN] = useState(70);
+  const [P, setP] = useState(75);
+  const [K, setK] = useState(105);
+  const [humidity, setHumidity] = useState(57);
+  const [ph, setPh] = useState(6.7);
+  const [rainfall, setRainfall] = useState(160);
+  const [temperature, setTemperature] = useState(26.5);
   const [result, setResult] = useState(null);
   const [name, setName] = useState("")
 
@@ -39,7 +39,7 @@ function App() {
     return (
       <div className="main">
         <h1>AI-check</h1>
-        <p>För att komma in: rita rätt siffra.</p>
+        <p>För att komma in, rita in rätt siffra.</p>
         <DrawingGate apiBase={API_BASE} onPassed={() => setVerified(true)} />
       </div>
     );
@@ -48,7 +48,7 @@ function App() {
   return (
 
     <div className='main'>
-      <label>Name: </label>
+      <label className='name'>Name: </label>
       <input onChange={(e) => setName(e.target.value)} type='textbox' />
       <div className='value-card'>
         <h2>Soil values</h2>
