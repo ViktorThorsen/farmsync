@@ -7,16 +7,16 @@ Projektet innehåller även en MNIST-baserad inloggningskontroll där användare
 
 ## Funktioner
 
-- Grödrekommendation  
+- **Grödrekommendation**  
   Backend använder en tränad Random Forest-modell (`random_forest_crop.joblib`) och en scaler för att förutsäga bästa gröda baserat på NPK-värden, pH, temperatur, luftfuktighet och nederbörd. Resultaten sparas i en SQLite-databas.
 
-- Rit-baserad autentisering  
+- **Rit-baserad autentisering**  
   Användaren måste rita en siffra som verifieras mot en MNIST-modell innan man får tillgång till appen.
 
-- Frontend i React  
+- **Frontend i React**  
   Interaktivt gränssnitt där användaren kan ställa in jord- och vädervärden via sliders. Resultatet visas tillsammans med en sammanfattning av de värden som användes.
 
-- Databas  
+- **Databas**  
   SQLite används för att spara alla förutsägelser tillsammans med inskickade parametrar och användarnamn.
 
 ---
@@ -38,20 +38,24 @@ Projektet innehåller även en MNIST-baserad inloggningskontroll där användare
 
 ## Installation
 
-### Backend (Flask)
+```bash
+# 1. Klona repot
+git clone https://github.com/ViktorThorsen/farmsync.git
+cd farmsync
 
-1. Klona repot och gå till servermappen:
-   ```bash
-   git clone https://github.com/ViktorThorsen/farmsync.git
-   cd farmsync/server
-   ```
-2. Installera beroenden:
-   pip install -r requirements.txt
-3. Starta servern:
-   python api.py
-4. Gå till frontendmappen:
-   cd farmsync/frontend
-5. Installera beroenden:
-   npm install
-6. Starta frontend:
-   npm run dev.
+# 2. Installera backend (Flask)
+cd server
+pip install -r requirements.txt
+
+# 3. Starta backend-servern
+python api.py
+# API körs på http://127.0.0.1:5000
+
+# 4. Installera frontend (React)
+cd ../frontend
+npm install
+
+# 5. Starta frontend
+npm run dev
+# Frontend körs på http://localhost:5173 (eller den port Vite anger)
+```
