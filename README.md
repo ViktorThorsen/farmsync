@@ -2,6 +2,7 @@
 
 FarmSync är en fullstack-applikation som kombinerar maskininlärning och ett modernt webbgränssnitt för att rekommendera grödor baserat på jord- och väderparametrar.  
 Projektet innehåller även en MNIST-baserad inloggningskontroll där användaren måste rita en siffra rätt innan systemet kan användas.
+https://farmsync.viktorthorsen.se/
 
 ---
 
@@ -51,11 +52,15 @@ pip install -r requirements.txt
 python api.py
 # API körs på http://127.0.0.1:5000
 
-# 4. Installera frontend (React)
+#4. Hämta modellen för AI check på:
+url https://drive.google.com/file/d/1H361sWNAUbbMuNn7GO1-p048MFrQhWDR/view?usp=sharing
+#5. Ladda ned modellen och lägg modellfilen i farmsync-clean/server/models, se till att den har namnet mnist_et.joblib
+
+# 5. Installera frontend (React)
 cd ../frontend
 npm install
 
-# 5. Starta frontend
+# 6. Starta frontend
 npm run dev
 # Frontend körs på http://localhost:5173 (eller den port Vite anger)
 ```
